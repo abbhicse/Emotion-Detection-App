@@ -1,0 +1,16 @@
+# Core ML & image processing
+torch
+torchvision
+numpy
+matplotlib
+opencv-python
+Pillow
+# Web app
+streamlit
+# Face detection
+mediapipe
+#dlib
+# Optional (for future enhancements)
+scikit-learn
+timm
+
