@@ -1,5 +1,4 @@
 # model_resnet50.py
-
 import os
 import torch
 import torch.nn as nn
