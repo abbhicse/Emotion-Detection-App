@@ -3,14 +3,16 @@ torch
 torchvision
 numpy
 matplotlib
-opencv-python
+opencv-python-headless
 Pillow
+
 # Web app
 streamlit
+
 # Face detection
 mediapipe
-#dlib
+dlib
+
 # Optional (for future enhancements)
 scikit-learn
 timm
-
