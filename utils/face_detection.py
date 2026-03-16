@@ -1,32 +1,26 @@
 import cv2
 import numpy as np
 from PIL import Image
-import mediapipe as mp
-
-mp_face_detection = mp.solutions.face_detection
-mp_face_mesh = mp.solutions.face_mesh
 
 
 def detect_face(image):
-    """
-    Detect and align a face using MediaPipe only.
-    For already cropped small face images (like FER), skip detection.
-    Returns a 48x48 RGB PIL image or None.
-    """
+    try:
+        from mediapipe.python.solutions import face_detection as mp_face_detection
+        from mediapipe.python.solutions import face_mesh as mp_face_mesh
+    except Exception as e:
+        print(f"[MediaPipe Import Error] {e}")
+        return None
 
     w, h = image.size
 
-    # Already cropped small face image
     if min(w, h) <= 64:
         if image.mode != "RGB":
             image = image.convert("RGB")
         return image.resize((48, 48))
 
-    # Convert everything to RGB
     if image.mode != "RGB":
         image = image.convert("RGB")
 
-    # Upscale small images a bit for better detection
     min_size = 150
     if image.size[0] < min_size or image.size[1] < min_size:
         new_size = (max(min_size, image.size[0]), max(min_size, image.size[1]))
@@ -35,8 +29,12 @@ def detect_face(image):
     img_rgb = np.array(image)
     h, w, _ = img_rgb.shape
 
-    with mp_face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5) as detector, \
-         mp_face_mesh.FaceMesh(static_image_mode=True) as face_mesh:
+    with mp_face_detection.FaceDetection(
+        model_selection=1,
+        min_detection_confidence=0.5
+    ) as detector, mp_face_mesh.FaceMesh(
+        static_image_mode=True
+    ) as face_mesh:
 
         detection_results = detector.process(img_rgb)
         if not detection_results.detections:
