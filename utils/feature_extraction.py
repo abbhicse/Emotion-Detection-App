@@ -1,32 +1,35 @@
-import mediapipe as mp
 import cv2
 import numpy as np
 
-# Initialize MediaPipe Face Mesh
-mp_face_mesh = mp.solutions.face_mesh
 
 def extract_landmarks(image):
     """
-    Use MediaPipe to extract facial landmarks (optional).
-    Works with both PIL.Image and NumPy arrays.
-    Returns list of (x, y) landmark coordinates.
+    Extract facial landmarks using MediaPipe Face Mesh.
+    Accepts PIL.Image or NumPy array.
+    Returns a list of (x, y) landmark coordinates.
     """
-    # ✅ Convert PIL image to NumPy if needed
+    try:
+        from mediapipe.python.solutions import face_mesh as mp_face_mesh
+    except Exception as e:
+        print(f"[MediaPipe Import Error - feature_extraction] {e}")
+        return []
+
     if not isinstance(image, np.ndarray):
         image = np.array(image)
 
-    # ✅ Ensure image has 3 channels (MediaPipe requires RGB)
-    if image.ndim == 2:  # grayscale → stack channels
-        image = np.stack([image]*3, axis=-1)
+    if image.ndim == 2:
+        image = np.stack([image] * 3, axis=-1)
 
-    # ✅ Convert RGB (PIL) → BGR (OpenCV)
-    image_bgr = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    # Ensure RGB for MediaPipe
+    if image.shape[-1] == 3:
+        image_rgb = image
+    else:
+        return []
 
     with mp_face_mesh.FaceMesh(static_image_mode=True) as face_mesh:
-        results = face_mesh.process(image_bgr)
+        results = face_mesh.process(image_rgb)
 
         if results.multi_face_landmarks:
-            landmarks = [(lm.x, lm.y) for lm in results.multi_face_landmarks[0].landmark]
-            return landmarks
+            return [(lm.x, lm.y) for lm in results.multi_face_landmarks[0].landmark]
 
     return []
