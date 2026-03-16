@@ -11,7 +11,6 @@ streamlit
 
 # Face detection
 mediapipe
-dlib
 
 # Optional (for future enhancements)
 scikit-learn
